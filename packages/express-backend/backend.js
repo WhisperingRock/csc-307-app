@@ -49,6 +49,11 @@ const findUserById = (id) =>
 	users["users_list"].find((user) => //return first found instance w/ find()
 		user["id"] === id);
 
+const addUser = (user) => {
+	users["users_list"].push(user);
+	return user;
+}
+
 app.use(express.json());// format incoming data as JSON
 
 // Specific user if exists or user table if desired DNE
@@ -91,6 +96,13 @@ app.get("/users/:id", (req, res) =>
 	}
 );
 
+app.post("/users", (req, res) => 
+	{
+		const userToAdd = req.body;
+		addUser(userToAdd);
+		res.send();
+	}
+);
 
 // backend just listening
 app.listen(port, () => 
