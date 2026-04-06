@@ -45,6 +45,10 @@ const findUserByName = (name) =>
 		user["name"] === name);
 };
 
+const findUserById = (id) => 
+	users["users_list"].find((user) => //return first found instance w/ find()
+		user["id"] === id);
+
 app.use(express.json());// format incoming data as JSON
 
 // Specific user if exists or user table if desired DNE
@@ -68,6 +72,22 @@ app.get("/users", (req, res) =>
 app.get("/", (req, res) =>   
 	{
 		res.send("Hello World!");
+	}
+);
+
+app.get("/users/:id", (req, res) =>
+	{
+		const id = req.params["id"]; // or req.params.id
+		let result = findUserById(id);
+		if(result === undefined)
+		{
+			res.status(404).send("Resource not found.");
+		}
+		else
+		{
+			res.send(result);
+		}
+
 	}
 );
 
