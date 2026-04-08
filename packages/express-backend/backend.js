@@ -45,22 +45,57 @@ const findUserByName = (name) =>
 		user["name"] === name);
 };
 
-const findUserById = (id) => 
+const findUserById = (id) =>
+{
 	users["users_list"].find((user) => //return first found instance w/ find()
 		user["id"] === id);
+}
 
 const addUser = (user) => {
 	users["users_list"].push(user);
 	return user;
-}
+};
+
+const deleteUserById = (id) => {
+	// Purpose : delete user (by filtering)
+	// Input : requested id of user
+	// Output : bool if id was found (and deleted)
+	// Note : difference in length before/after will let us
+	// 			know if a id was found and deleted.
+
+	const prior_len = users["users_list"].length; 
+
+	users["users_list"] = users["users_list"].filter((u) =>
+		u["id"] !== id);
+
+	return users["users_list"].length !== prior_len; 
+};
+
+const findUserByNameAndJob = (name, job) =>
+{
+	return users["users_list"]
+		.filter((user) => user["name"] === name && 
+			user["job"] === job)
+};
+
+
 
 app.use(express.json());// format incoming data as JSON
 
+		
 // Specific user if exists or user table if desired DNE
 app.get("/users", (req, res) =>   
 	{
 		const name = req.query.name;
-		if(name != undefined)
+		const job = req.query.job;
+
+		if(name != undefined && job != undefined)
+		{
+			let result = findUserByNameAndJob(name, job);
+			result = {users_list: result};
+			res.send(result);
+		}
+		else if(name != undefined)
 		{
 			let result = findUserByName(name);
 			result = {users_list: result};
@@ -82,7 +117,7 @@ app.get("/", (req, res) =>
 
 app.get("/users/:id", (req, res) =>
 	{
-		const id = req.params["id"]; // or req.params.id
+		const id = req.params["id"]; 
 		let result = findUserById(id);
 		if(result === undefined)
 		{
@@ -110,5 +145,23 @@ app.listen(port, () =>
 		console.log(`Example app listening at http://localhost:${port}`);
 	}
 );
+
+
+app.delete("/users/:id", (req, res) =>
+	{
+		const id = req.params["id"]; 
+		let result = deleteUserById(id);
+
+		if(result === false)
+		{
+			res.status(404).send("Resource not found.");
+		}
+		else
+		{
+			res.send('DELETE request to users');
+		}
+	}
+);
+
 
 
