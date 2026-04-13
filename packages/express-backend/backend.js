@@ -136,7 +136,7 @@ app.get("/users/:id", (req, res) =>
 app.post("/users", (req, res) => 
 	{
 
-		const userToAdd = {id: Math.floor(Math.random() * 10000),
+		const userToAdd = {id: Math.floor(Math.random() * 10000).toString(),
 			...req.body};
 		const added = addUser(userToAdd);
 		res.status(201).json(added);
