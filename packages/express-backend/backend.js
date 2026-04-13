@@ -135,8 +135,8 @@ app.get("/users/:id", (req, res) =>
 app.post("/users", (req, res) => 
 	{
 		const userToAdd = req.body;
-		addUser(userToAdd);
-		res.send();
+		const added = addUser(userToAdd);
+		res.status(201).json(added);
 	}
 );
 

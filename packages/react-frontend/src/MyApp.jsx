@@ -53,7 +53,18 @@ function MyApp()
 				},
 				body: JSON.stringify(person), 
 			}
+		)
+		.then(async (res) => 
+			{
+				if (res !== 201)
+				{
+					return Promise.reject();
+				}
+
+				return res.json().catch(() => person);
+			}
 		);
+
 		return promise; 
 	}
 
