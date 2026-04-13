@@ -1,6 +1,7 @@
 // backend.js
 
 import express from "express"; //express = HTTP middleware dispatch
+import cors from "cors";
 
 const app = express(); 	// instance of express
 const port = 8000;	 	// listening port
@@ -79,7 +80,7 @@ const findUserByNameAndJob = (name, job) =>
 };
 
 
-
+app.use(cors());
 app.use(express.json());// format incoming data as JSON
 
 		
