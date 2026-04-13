@@ -53,6 +53,7 @@ const findUserById = (id) =>
 }
 
 const addUser = (user) => {
+
 	users["users_list"].push(user);
 	return user;
 };
@@ -134,7 +135,9 @@ app.get("/users/:id", (req, res) =>
 
 app.post("/users", (req, res) => 
 	{
-		const userToAdd = req.body;
+
+		const userToAdd = {id: Math.floor(Math.random() * 10000),
+			...req.body};
 		const added = addUser(userToAdd);
 		res.status(201).json(added);
 	}
