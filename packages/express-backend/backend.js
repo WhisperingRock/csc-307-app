@@ -39,6 +39,10 @@ const users =
 	],
 };
 
+app.use(cors());
+app.use(express.json());// format incoming data as JSON
+
+
 // Retrieve the desired user (if exists)
 const findUserByName = (name) =>
 {
@@ -48,7 +52,7 @@ const findUserByName = (name) =>
 
 const findUserById = (id) =>
 {
-	users["users_list"].find((user) => //return first found instance w/ find()
+	return users["users_list"].find((user) => //return first found instance w/ find()
 		user["id"] === id);
 }
 
@@ -65,12 +69,14 @@ const deleteUserById = (id) => {
 	// Note : difference in length before/after will let us
 	// 			know if a id was found and deleted.
 
-	const prior_len = users["users_list"].length; 
+	const idToRemove = findUserById(id); 	
 
-	users["users_list"] = users["users_list"].filter((u) =>
-		u["id"] !== id);
+	if(idToRemove === undefined){return undefined;}
 
-	return users["users_list"].length !== prior_len; 
+	users.users_list = users.users_list
+							.filter((user) =>
+								user.id !== id
+							); 
 };
 
 const findUserByNameAndJob = (name, job) =>
@@ -81,16 +87,13 @@ const findUserByNameAndJob = (name, job) =>
 };
 
 
-app.use(cors());
-app.use(express.json());// format incoming data as JSON
-
 		
 // Specific user if exists or user table if desired DNE
 app.get("/users", (req, res) =>   
 	{
 		const name = req.query.name;
 		const job = req.query.job;
-
+		
 		if(name != undefined && job != undefined)
 		{
 			let result = findUserByNameAndJob(name, job);
@@ -135,18 +138,10 @@ app.get("/users/:id", (req, res) =>
 
 app.post("/users", (req, res) => 
 	{
-
 		const userToAdd = {id: Math.floor(Math.random() * 10000).toString(),
 			...req.body};
 		const added = addUser(userToAdd);
-		res.status(201).json(added);
-	}
-);
-
-// backend just listening
-app.listen(port, () => 
-	{
-		console.log(`Example app listening at http://localhost:${port}`);
+		res.status(201).send(added);
 	}
 );
 
@@ -162,10 +157,16 @@ app.delete("/users/:id", (req, res) =>
 		}
 		else
 		{
-			res.send('DELETE request to users');
+			res.status(204).send();
 		}
 	}
 );
 
+
+app.listen(port, () => 
+	{
+		console.log(`Example app listening at http://localhost:${port}`);
+	}
+);
 
 

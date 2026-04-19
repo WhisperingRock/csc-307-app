@@ -8,31 +8,31 @@ function MyApp()
 {
 	const [characters, setCharacters] = useState([]); 
 
-	useEffect(() => 
-		{
-		fetchUsers()
-			.then((res) => res.json())
-			.then((json) => setCharacters(json["users_list"]))
-			.catch((error) => {console.log(error);});
-		},
-		[]
-	);
 		
 	function removeOneCharacter(index)
 	{
-		const updated = characters.filter((character, i) => 
-			{
-				return i !== index;
-			}
-		);
-		setCharacters(updated);
+		deleteUser(characters.at(index).id)
+			.then(() =>
+				{
+					const updated = characters.filter((character, i) =>
+						{
+							return i !== index;
+						}
+					);
+					setCharacters(updated);
+				}
+			)
+			.catch((error) =>
+				{
+					console.log(error); 
+				}
+			); 
 	}
 
 	function updateList(person)
 	{
-		//setCharacters([...characters, person]);
 		postUser(person)
-			.then(() => setCharacters([...characters, person]))
+			.then((createdUser) => setCharacters([...characters, createdUser]))
 			.catch((error) => {console.log(error);});
 	}
 
@@ -54,19 +54,54 @@ function MyApp()
 				body: JSON.stringify(person), 
 			}
 		)
-		.then(async (res) => 
+		.then((res) => 
 			{
-				if (res !== 201)
+				if (res.status !== 201)
 				{
+					//throw new Error(`Wrong status: ${res.status}`); 
 					return Promise.reject();
 				}
-
-				return res.json().catch(() => person);
+				else
+				{
+					return res.json();
+				}
 			}
 		);
 
 		return promise; 
 	}
+
+	function deleteUser(id)
+	{
+		return fetch(`http://localhost:8000/users/${id}`, 
+			{
+				method: "DELETE", 
+				headers: 
+				{
+					"Content-Type": "application/json",
+				},
+			},
+		)
+		.then((res) => 
+			{
+				if(res.status === 404)
+				{
+					throw new Error(res.statusText); 
+				}
+			}
+		);
+	}
+
+	useEffect(() => 
+		{
+		fetchUsers()
+			.then((res) => res.json())
+			.then((json) => setCharacters(json["users_list"]))
+			.catch((error) => {console.log(error);});
+		},
+		[]
+	);
+	
 
 	return(
 		<div className="container">
