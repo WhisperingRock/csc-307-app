@@ -2,6 +2,7 @@
 
 import express from "express"; //express = HTTP middleware dispatch
 import cors from "cors";
+//import _ from "./services/user-services.js"; 
 
 const app = express(); 	// instance of express
 const port = 8000;	 	// listening port
@@ -56,13 +57,14 @@ const findUserById = (id) =>
 		user["id"] === id);
 }
 
-const addUser = (user) => {
-
+const addUser = (user) => 
+{
 	users["users_list"].push(user);
 	return user;
 };
 
-const deleteUserById = (id) => {
+const deleteUserById = (id) => 
+{
 	// Purpose : delete user (by filtering)
 	// Input : requested id of user
 	// Output : bool if id was found (and deleted)
